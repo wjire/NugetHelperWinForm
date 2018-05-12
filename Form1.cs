@@ -49,7 +49,6 @@ namespace NugetHelperWinForm
         {
             string url = nugetUrl + apiUri + targetName;
             lblName.Text = targetName;
-            txtDescription.Text = url;
             var version = HttpGet(url).Trim('"');
             if (string.IsNullOrWhiteSpace(version))
             {
