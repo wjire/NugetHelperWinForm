@@ -49,17 +49,26 @@ namespace NugetHelperWinForm
         {
             string url = nugetUrl + apiUri + targetName;
             lblName.Text = targetName;
-            var version = HttpGet(url).Trim('"');
-            if (string.IsNullOrWhiteSpace(version))
+            try
             {
-                lblVersion.Text = "第一次上传该项目";
+                string version = HttpGet(url).Trim('"');
+                if (string.IsNullOrWhiteSpace(version))
+                {
+                    lblVersion.Text = "第一次上传该项目";
+                    txtVersion.Text = "1.0.0";
+                }
+                else
+                {
+                    lblVersion.Text = version;
+                    txtVersion.Text = UpdateVersion(lblVersion.Text);
+                }
+            }
+            catch (Exception)
+            {
+                lblVersion.Text = "未获取到最新的版本号";
                 txtVersion.Text = "1.0.0";
             }
-            else
-            {
-                lblVersion.Text = version;
-                txtVersion.Text = UpdateVersion(lblVersion.Text);
-            }
+
         }
 
         /// <summary>

@@ -91,7 +91,7 @@
             // 
             this.lblVersion.AutoSize = true;
             this.lblVersion.Font = new System.Drawing.Font("宋体", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.lblVersion.Location = new System.Drawing.Point(85, 46);
+            this.lblVersion.Location = new System.Drawing.Point(85, 48);
             this.lblVersion.Name = "lblVersion";
             this.lblVersion.Size = new System.Drawing.Size(65, 12);
             this.lblVersion.TabIndex = 6;
