@@ -46,7 +46,7 @@
             // 
             // btnConfirm
             // 
-            this.btnConfirm.Location = new System.Drawing.Point(10, 338);
+            this.btnConfirm.Location = new System.Drawing.Point(11, 230);
             this.btnConfirm.Name = "btnConfirm";
             this.btnConfirm.Size = new System.Drawing.Size(79, 30);
             this.btnConfirm.TabIndex = 0;
@@ -56,7 +56,7 @@
             // 
             // btnCancel
             // 
-            this.btnCancel.Location = new System.Drawing.Point(216, 338);
+            this.btnCancel.Location = new System.Drawing.Point(214, 230);
             this.btnCancel.Name = "btnCancel";
             this.btnCancel.Size = new System.Drawing.Size(75, 30);
             this.btnCancel.TabIndex = 1;
@@ -66,10 +66,10 @@
             // 
             // txtDescription
             // 
-            this.txtDescription.Location = new System.Drawing.Point(10, 277);
+            this.txtDescription.Location = new System.Drawing.Point(11, 169);
             this.txtDescription.Multiline = true;
             this.txtDescription.Name = "txtDescription";
-            this.txtDescription.Size = new System.Drawing.Size(281, 55);
+            this.txtDescription.Size = new System.Drawing.Size(278, 55);
             this.txtDescription.TabIndex = 2;
             // 
             // label1
@@ -144,7 +144,7 @@
             // 
             this.label6.AutoSize = true;
             this.label6.Font = new System.Drawing.Font("宋体", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.label6.Location = new System.Drawing.Point(8, 233);
+            this.label6.Location = new System.Drawing.Point(9, 139);
             this.label6.Name = "label6";
             this.label6.Size = new System.Drawing.Size(207, 12);
             this.label6.TabIndex = 11;
@@ -154,16 +154,16 @@
             // 
             this.label5.AutoSize = true;
             this.label5.Font = new System.Drawing.Font("宋体", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.label5.Location = new System.Drawing.Point(8, 189);
+            this.label5.Location = new System.Drawing.Point(9, 109);
             this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(96, 12);
+            this.label5.Size = new System.Drawing.Size(70, 12);
             this.label5.TabIndex = 12;
-            this.label5.Text = "是否发布依赖项";
+            this.label5.Text = "发布依赖项";
             // 
             // rdoYes
             // 
             this.rdoYes.AutoSize = true;
-            this.rdoYes.Location = new System.Drawing.Point(180, 187);
+            this.rdoYes.Location = new System.Drawing.Point(141, 107);
             this.rdoYes.Name = "rdoYes";
             this.rdoYes.Size = new System.Drawing.Size(35, 16);
             this.rdoYes.TabIndex = 13;
@@ -174,7 +174,7 @@
             // 
             this.rdoNo.AutoSize = true;
             this.rdoNo.Checked = true;
-            this.rdoNo.Location = new System.Drawing.Point(115, 187);
+            this.rdoNo.Location = new System.Drawing.Point(87, 107);
             this.rdoNo.Name = "rdoNo";
             this.rdoNo.Size = new System.Drawing.Size(35, 16);
             this.rdoNo.TabIndex = 14;
@@ -186,7 +186,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(301, 380);
+            this.ClientSize = new System.Drawing.Size(301, 266);
             this.Controls.Add(this.rdoNo);
             this.Controls.Add(this.rdoYes);
             this.Controls.Add(this.label5);
