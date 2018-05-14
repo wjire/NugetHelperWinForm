@@ -39,11 +39,14 @@
             this.label4 = new System.Windows.Forms.Label();
             this.lblName = new System.Windows.Forms.Label();
             this.label6 = new System.Windows.Forms.Label();
+            this.label5 = new System.Windows.Forms.Label();
+            this.rdoYes = new System.Windows.Forms.RadioButton();
+            this.rdoNo = new System.Windows.Forms.RadioButton();
             this.SuspendLayout();
             // 
             // btnConfirm
             // 
-            this.btnConfirm.Location = new System.Drawing.Point(12, 191);
+            this.btnConfirm.Location = new System.Drawing.Point(10, 338);
             this.btnConfirm.Name = "btnConfirm";
             this.btnConfirm.Size = new System.Drawing.Size(79, 30);
             this.btnConfirm.TabIndex = 0;
@@ -53,7 +56,7 @@
             // 
             // btnCancel
             // 
-            this.btnCancel.Location = new System.Drawing.Point(216, 191);
+            this.btnCancel.Location = new System.Drawing.Point(216, 338);
             this.btnCancel.Name = "btnCancel";
             this.btnCancel.Size = new System.Drawing.Size(75, 30);
             this.btnCancel.TabIndex = 1;
@@ -63,7 +66,7 @@
             // 
             // txtDescription
             // 
-            this.txtDescription.Location = new System.Drawing.Point(10, 130);
+            this.txtDescription.Location = new System.Drawing.Point(10, 277);
             this.txtDescription.Multiline = true;
             this.txtDescription.Name = "txtDescription";
             this.txtDescription.Size = new System.Drawing.Size(281, 55);
@@ -141,17 +144,52 @@
             // 
             this.label6.AutoSize = true;
             this.label6.Font = new System.Drawing.Font("宋体", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.label6.Location = new System.Drawing.Point(8, 106);
+            this.label6.Location = new System.Drawing.Point(8, 233);
             this.label6.Name = "label6";
             this.label6.Size = new System.Drawing.Size(207, 12);
             this.label6.TabIndex = 11;
             this.label6.Text = "下面写描述,千万不要使用回车换行";
             // 
+            // label5
+            // 
+            this.label5.AutoSize = true;
+            this.label5.Font = new System.Drawing.Font("宋体", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.label5.Location = new System.Drawing.Point(8, 189);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(96, 12);
+            this.label5.TabIndex = 12;
+            this.label5.Text = "是否发布依赖项";
+            // 
+            // rdoYes
+            // 
+            this.rdoYes.AutoSize = true;
+            this.rdoYes.Location = new System.Drawing.Point(180, 187);
+            this.rdoYes.Name = "rdoYes";
+            this.rdoYes.Size = new System.Drawing.Size(35, 16);
+            this.rdoYes.TabIndex = 13;
+            this.rdoYes.Text = "是";
+            this.rdoYes.UseVisualStyleBackColor = true;
+            // 
+            // rdoNo
+            // 
+            this.rdoNo.AutoSize = true;
+            this.rdoNo.Checked = true;
+            this.rdoNo.Location = new System.Drawing.Point(115, 187);
+            this.rdoNo.Name = "rdoNo";
+            this.rdoNo.Size = new System.Drawing.Size(35, 16);
+            this.rdoNo.TabIndex = 14;
+            this.rdoNo.TabStop = true;
+            this.rdoNo.Text = "否";
+            this.rdoNo.UseVisualStyleBackColor = true;
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(301, 233);
+            this.ClientSize = new System.Drawing.Size(301, 380);
+            this.Controls.Add(this.rdoNo);
+            this.Controls.Add(this.rdoYes);
+            this.Controls.Add(this.label5);
             this.Controls.Add(this.label6);
             this.Controls.Add(this.lblName);
             this.Controls.Add(this.label4);
@@ -184,6 +222,9 @@
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.Label lblName;
         private System.Windows.Forms.Label label6;
+        private System.Windows.Forms.Label label5;
+        private System.Windows.Forms.RadioButton rdoYes;
+        private System.Windows.Forms.RadioButton rdoNo;
     }
 }
 
