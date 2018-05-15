@@ -83,7 +83,7 @@ namespace NugetHelperWinForm
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private async void btnConfirm_Click(object sender, EventArgs e)
+        private void btnConfirm_Click(object sender, EventArgs e)
         {
             StringBuilder sb = new StringBuilder();
             foreach (var line in File.ReadLines(assemblyinfoPath))
@@ -91,7 +91,7 @@ namespace NugetHelperWinForm
                 CheckLine(sb, line);
             }
             File.WriteAllText(assemblyinfoPath, sb.ToString());
-            await ProcessCmd();
+            ProcessCmd();
             this.Close();
             this.Dispose();
         }
@@ -142,71 +142,73 @@ namespace NugetHelperWinForm
         /// <summary>
         /// 执行 windows cmd 命令
         /// </summary>
-        private Task ProcessCmd()
+        private void ProcessCmd()
         {
-            return Task.Run(() =>
-              {
-                  Process proc = new Process();
-                  string strOuput = null;
-                  try
-                  {
-                      proc.StartInfo.FileName = "cmd.exe";
 
-                      //是否使用操作系统shell启动
-                      proc.StartInfo.UseShellExecute = false;
+            Process proc = new Process();
+            string strOuput = null;
+            try
+            {
+                proc.StartInfo.FileName = "cmd.exe";
 
-                      // 接受来自调用程序的输入信息
-                      proc.StartInfo.RedirectStandardInput = true;
+                //是否使用操作系统shell启动
+                proc.StartInfo.UseShellExecute = false;
 
-                      //输出信息
-                      proc.StartInfo.RedirectStandardOutput = true;
+                // 接受来自调用程序的输入信息
+                proc.StartInfo.RedirectStandardInput = true;
 
-                      // 输出错误
-                      proc.StartInfo.RedirectStandardError = true;
+                //输出信息
+                proc.StartInfo.RedirectStandardOutput = true;
 
-                      //不显示程序窗口
-                      proc.StartInfo.CreateNoWindow = true;
+                // 输出错误
+                proc.StartInfo.RedirectStandardError = true;
 
-                      proc.Start();
+                //不显示程序窗口
+                proc.StartInfo.CreateNoWindow = true;
 
-                      //构造命令
-                      StringBuilder sb = new StringBuilder();
-                      if (rdoNo.Checked)
-                      {
-                          //因为不发布依赖项,所以需要移动 packages.config 文件
-                          sb.Append($"move {projectDir}packages.config {toolPath}");
-                          sb.Append("&&");
+                proc.Start();
 
-                          sb.Append(CreateCmd());
+                //构造命令
+                StringBuilder sb = new StringBuilder();
 
-                          //还原 packages.config 文件
-                          sb.Append($"&move {toolPath}\\packages.config {projectDir}");
-                      }
-                      else
-                      {
-                          sb.Append(CreateCmd());
-                      }
+                if (rdoNo.Checked)
+                {
+                    if (File.Exists($"{projectDir}packages.config"))
+                    {
+                        //因为不发布依赖项,所以需要移动 packages.config 文件
+                        sb.Append($"move {projectDir}packages.config {toolPath}");
+                        sb.Append("&&");
+                    }
 
-                      //退出
-                      sb.Append("&exit");
+                    sb.Append(CreateCmd());
 
-                      //向cmd窗口发送输入信息
-                      proc.StandardInput.WriteLine(sb.ToString());
-                      proc.StandardInput.AutoFlush = true;
+                    //还原 packages.config 文件
+                    sb.Append($"&move {toolPath}\\packages.config {projectDir}");
+                }
+                else
+                {
+                    sb.Append(CreateCmd());
+                }
 
-                      strOuput = proc.StandardOutput.ReadToEnd();
-                  }
-                  catch (Exception ex)
-                  {
-                      txtMsg.Text = ex.Message;
-                  }
-                  finally
-                  {
-                      proc.WaitForExit();
-                      proc.Close();
-                      Console.WriteLine(strOuput);
-                  }
-              });
+                //退出
+                sb.Append("&exit");
+
+                //向cmd窗口发送输入信息
+                proc.StandardInput.WriteLine(sb.ToString());
+                proc.StandardInput.AutoFlush = true;
+
+                strOuput = proc.StandardOutput.ReadToEnd();
+            }
+            catch (Exception ex)
+            {
+                txtMsg.Text = ex.Message;
+            }
+            finally
+            {
+                proc.WaitForExit();
+                proc.Close();
+                Console.WriteLine(strOuput);
+            }
         }
 
         /// <summary>
