@@ -4,6 +4,8 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace NugetHelperWinForm
@@ -68,12 +70,12 @@ namespace NugetHelperWinForm
                     txtVersion.Text = UpdateVersion(lblVersion.Text);
                 }
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                txtMsg.Text = ex.Message;
                 lblVersion.Text = "未获取到最新的版本号";
                 txtVersion.Text = "1.0.0";
             }
-
         }
 
         /// <summary>
@@ -81,7 +83,7 @@ namespace NugetHelperWinForm
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void btnConfirm_Click(object sender, EventArgs e)
+        private async void btnConfirm_Click(object sender, EventArgs e)
         {
             StringBuilder sb = new StringBuilder();
             foreach (var line in File.ReadLines(assemblyinfoPath))
@@ -89,7 +91,8 @@ namespace NugetHelperWinForm
                 CheckLine(sb, line);
             }
             File.WriteAllText(assemblyinfoPath, sb.ToString());
-            ProcessCmd();
+            await ProcessCmd();
+            Thread.Sleep(2000);
             this.Close();
             this.Dispose();
         }
@@ -140,68 +143,71 @@ namespace NugetHelperWinForm
         /// <summary>
         /// 执行 windows cmd 命令
         /// </summary>
-        private void ProcessCmd()
+        private Task ProcessCmd()
         {
-            Process proc = new Process();
-            string strOuput = null;
-            try
-            {
-                proc.StartInfo.FileName = "cmd.exe";
+            return Task.Run(() =>
+              {
+                  Process proc = new Process();
+                  string strOuput = null;
+                  try
+                  {
+                      proc.StartInfo.FileName = "cmd.exe";
 
-                //是否使用操作系统shell启动
-                proc.StartInfo.UseShellExecute = false;
+                      //是否使用操作系统shell启动
+                      proc.StartInfo.UseShellExecute = false;
 
-                // 接受来自调用程序的输入信息
-                proc.StartInfo.RedirectStandardInput = true;
+                      // 接受来自调用程序的输入信息
+                      proc.StartInfo.RedirectStandardInput = true;
 
-                //输出信息
-                proc.StartInfo.RedirectStandardOutput = true;
+                      //输出信息
+                      proc.StartInfo.RedirectStandardOutput = true;
 
-                // 输出错误
-                proc.StartInfo.RedirectStandardError = true;
+                      // 输出错误
+                      proc.StartInfo.RedirectStandardError = true;
 
-                //不显示程序窗口
-                proc.StartInfo.CreateNoWindow = true;
+                      //不显示程序窗口
+                      proc.StartInfo.CreateNoWindow = true;
 
-                proc.Start();
+                      proc.Start();
 
-                //构造命令
-                StringBuilder sb = new StringBuilder();
-                if (rdoNo.Checked)
-                {
-                    //因为不发布依赖项,所以需要移动 packages.config 文件
-                    sb.Append($"move {projectDir}packages.config {toolPath}");
-                    sb.Append("&&");
+                      //构造命令
+                      StringBuilder sb = new StringBuilder();
+                      if (rdoNo.Checked)
+                      {
+                          //因为不发布依赖项,所以需要移动 packages.config 文件
+                          sb.Append($"move {projectDir}packages.config {toolPath}");
+                          sb.Append("&&");
 
-                    sb.Append(CreateCmd());
+                          sb.Append(CreateCmd());
 
-                    //还原 packages.config 文件
-                    sb.Append($"&move {toolPath}\\packages.config {projectDir}");
-                }
-                else
-                {
-                    sb.Append(CreateCmd());
-                }
+                          //还原 packages.config 文件
+                          sb.Append($"&move {toolPath}\\packages.config {projectDir}");
+                      }
+                      else
+                      {
+                          sb.Append(CreateCmd());
+                      }
 
-                //退出
-                sb.Append("&exit");
+                      //退出
+                      sb.Append("&exit");
 
-                //向cmd窗口发送输入信息
-                proc.StandardInput.WriteLine(sb.ToString());
-                proc.StandardInput.AutoFlush = true;
+                      //向cmd窗口发送输入信息
+                      proc.StandardInput.WriteLine(sb.ToString());
+                      proc.StandardInput.AutoFlush = true;
 
-                strOuput = proc.StandardOutput.ReadToEnd();
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Exception Occurred :{ex.Message},{ex.StackTrace}");
-            }
-            finally
-            {
-                proc.WaitForExit();
-                proc.Close();
-                Console.WriteLine(strOuput);
-            }
+                      strOuput = proc.StandardOutput.ReadToEnd();
+                  }
+                  catch (Exception ex)
+                  {
+                      txtMsg.Text = ex.Message;
+                  }
+                  finally
+                  {
+                      proc.WaitForExit();
+                      proc.Close();
+                      Console.WriteLine(strOuput);
+                  }
+              });
         }
 
         /// <summary>

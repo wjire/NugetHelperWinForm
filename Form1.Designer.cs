@@ -42,6 +42,7 @@
             this.label5 = new System.Windows.Forms.Label();
             this.rdoYes = new System.Windows.Forms.RadioButton();
             this.rdoNo = new System.Windows.Forms.RadioButton();
+            this.txtMsg = new System.Windows.Forms.TextBox();
             this.SuspendLayout();
             // 
             // btnConfirm
@@ -182,11 +183,21 @@
             this.rdoNo.Text = "否";
             this.rdoNo.UseVisualStyleBackColor = true;
             // 
+            // txtMsg
+            // 
+            this.txtMsg.Location = new System.Drawing.Point(309, 12);
+            this.txtMsg.Multiline = true;
+            this.txtMsg.Name = "txtMsg";
+            this.txtMsg.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
+            this.txtMsg.Size = new System.Drawing.Size(278, 248);
+            this.txtMsg.TabIndex = 15;
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(301, 266);
+            this.ClientSize = new System.Drawing.Size(599, 264);
+            this.Controls.Add(this.txtMsg);
             this.Controls.Add(this.rdoNo);
             this.Controls.Add(this.rdoYes);
             this.Controls.Add(this.label5);
@@ -225,6 +236,7 @@
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.RadioButton rdoYes;
         private System.Windows.Forms.RadioButton rdoNo;
+        private System.Windows.Forms.TextBox txtMsg;
     }
 }
 
