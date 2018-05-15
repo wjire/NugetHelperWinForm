@@ -92,7 +92,6 @@ namespace NugetHelperWinForm
             }
             File.WriteAllText(assemblyinfoPath, sb.ToString());
             await ProcessCmd();
-            Thread.Sleep(2000);
             this.Close();
             this.Dispose();
         }
