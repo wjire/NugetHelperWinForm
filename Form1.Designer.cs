@@ -57,7 +57,7 @@
             // 
             // btnCancel
             // 
-            this.btnCancel.Location = new System.Drawing.Point(214, 230);
+            this.btnCancel.Location = new System.Drawing.Point(289, 230);
             this.btnCancel.Name = "btnCancel";
             this.btnCancel.Size = new System.Drawing.Size(75, 30);
             this.btnCancel.TabIndex = 1;
@@ -70,7 +70,7 @@
             this.txtDescription.Location = new System.Drawing.Point(11, 169);
             this.txtDescription.Multiline = true;
             this.txtDescription.Name = "txtDescription";
-            this.txtDescription.Size = new System.Drawing.Size(278, 55);
+            this.txtDescription.Size = new System.Drawing.Size(353, 55);
             this.txtDescription.TabIndex = 2;
             // 
             // label1
@@ -185,18 +185,18 @@
             // 
             // txtMsg
             // 
-            this.txtMsg.Location = new System.Drawing.Point(309, 12);
+            this.txtMsg.Location = new System.Drawing.Point(11, 266);
             this.txtMsg.Multiline = true;
             this.txtMsg.Name = "txtMsg";
             this.txtMsg.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.txtMsg.Size = new System.Drawing.Size(278, 248);
+            this.txtMsg.Size = new System.Drawing.Size(353, 48);
             this.txtMsg.TabIndex = 15;
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(599, 264);
+            this.ClientSize = new System.Drawing.Size(376, 323);
             this.Controls.Add(this.txtMsg);
             this.Controls.Add(this.rdoNo);
             this.Controls.Add(this.rdoYes);

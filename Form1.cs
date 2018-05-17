@@ -91,6 +91,7 @@ namespace NugetHelperWinForm
                 CheckLine(sb, line);
             }
             File.WriteAllText(assemblyinfoPath, sb.ToString());
+            txtMsg.AppendText("\r\n正在上传至服务器,完成后会自动关闭所有窗口,请耐心等待!");
             ProcessCmd();
             this.Close();
             this.Dispose();
