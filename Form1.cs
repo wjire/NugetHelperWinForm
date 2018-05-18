@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -58,7 +59,12 @@ namespace NugetHelperWinForm
             lblName.Text = targetName;
             try
             {
-                string version = HttpGet(url).Trim('"');
+                //通过nuget站点的接口获取最高版本号
+                //string version = HttpGet(url).Trim('"');
+
+                //通过访问nuget站点的共享文件夹获取最高版本号
+                var version = GetMaxVersion();
+
                 if (string.IsNullOrWhiteSpace(version))
                 {
                     lblVersion.Text = "第一次上传该项目";
@@ -77,6 +83,7 @@ namespace NugetHelperWinForm
                 txtVersion.Text = "1.0.0";
             }
         }
+        
 
         /// <summary>
         /// 确认
@@ -248,6 +255,32 @@ namespace NugetHelperWinForm
             }
         }
 
+
+        /// <summary>
+        /// 获取最高版本号
+        /// </summary>
+        /// <returns></returns>
+        private string GetMaxVersion()
+        {
+            var version = string.Empty;
+            var path = @"\\192.168.10.16\d$\EastWestWalk\Projects\IIS\Web\MyNuget\1.0.0.5\Packages\" + targetName;
+            if (Directory.Exists(path))
+            {
+                var dirs = Directory.GetDirectories(path);
+                Dictionary<string, ulong> dic = new Dictionary<string, ulong>();
+                foreach (var dir in dirs)
+                {
+                    var temp = dir.Split('\\').Last();
+                    var r = Convert.ToUInt64(ConvertVersion(temp));
+                    dic.Add(temp, r);
+                }
+                var maxInt = dic.Values.Max();
+                version = dic.First(w => w.Value == maxInt).Key;
+            }
+            return version;
+        }
+
+
         /// <summary>
         /// 计算最新版本号 比如: 1.2.3 => 1.2.4
         /// </summary>
@@ -261,5 +294,19 @@ namespace NugetHelperWinForm
             nowVersionStrArray[2] = newLastNum.ToString();// 1 2 4
             return nowVersionStrArray.Aggregate((a, s) => a += "." + s);//1.2.4
         }
+
+
+        /// <summary>
+        /// 把 1.0.1 转换成 101
+        /// </summary>
+        /// <param name="str">版本号</param>
+        /// <returns></returns>
+        private string ConvertVersion(string str)
+        {
+            var nums = str.Split(new[] { '.' }, StringSplitOptions.RemoveEmptyEntries);
+            var r = nums.Aggregate((a, t) => a += t);
+            return r;
+        }
+
     }
 }
