@@ -83,7 +83,7 @@ namespace NugetHelperWinForm
                 txtVersion.Text = "1.0.0";
             }
         }
-        
+
 
         /// <summary>
         /// 确认
@@ -92,14 +92,17 @@ namespace NugetHelperWinForm
         /// <param name="e"></param>
         private void btnConfirm_Click(object sender, EventArgs e)
         {
-            StringBuilder sb = new StringBuilder();
+            StringBuilder sb = new StringBuilder(1024);
+            StringBuilder old = new StringBuilder(1024);
             foreach (var line in File.ReadLines(assemblyinfoPath))
             {
+                old.Append(line);
                 CheckLine(sb, line);
             }
             File.WriteAllText(assemblyinfoPath, sb.ToString());
             txtMsg.AppendText("\r\n正在上传至服务器,完成后会自动关闭所有窗口,请耐心等待!");
             ProcessCmd();
+            File.WriteAllText(assemblyinfoPath, old.ToString());
             this.Close();
             this.Dispose();
         }
