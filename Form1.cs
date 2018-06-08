@@ -96,7 +96,7 @@ namespace NugetHelperWinForm
             StringBuilder old = new StringBuilder(1024);
             foreach (var line in File.ReadLines(assemblyinfoPath))
             {
-                old.Append(line);
+                old.AppendLine(line);
                 CheckLine(sb, line);
             }
             File.WriteAllText(assemblyinfoPath, sb.ToString());
