@@ -37,6 +37,9 @@ namespace NugetHelperWinForm
         //pwd
         private readonly string pwd = AppConfigSetting.Pwd;
 
+        //Nuget Packages 物理路径
+        private readonly string packagesUrl = AppConfigSetting.PackagesUrl;
+
 
         public Form1()
         {
@@ -266,23 +269,45 @@ namespace NugetHelperWinForm
         private string GetMaxVersion()
         {
             var version = string.Empty;
-            var path = @"\\192.168.10.16\d$\EastWestWalk\Projects\IIS\Web\MyNuget\1.0.0.5\Packages\" + targetName;
+            var path = packagesUrl + targetName;
             if (Directory.Exists(path))
             {
                 var dirs = Directory.GetDirectories(path);
-                Dictionary<string, ulong> dic = new Dictionary<string, ulong>();
+                Dictionary<int[], string> dic = new Dictionary<int[], string>();
                 foreach (var dir in dirs)
                 {
-                    var temp = dir.Split('\\').Last();
-                    var r = Convert.ToUInt64(ConvertVersion(temp));
-                    dic.Add(temp, r);
+                    var versionStr = dir.Split('\\').Last();//拿到版本号:1.0.1
+                    var versionArray = ConvertVersionToIntArray(versionStr);//版本号转数组:int[]{1,0,1}
+                    dic.Add(versionArray, versionStr);
                 }
-                var maxInt = dic.Values.Max();
-                version = dic.First(w => w.Value == maxInt).Key;
+                version = GetMaxVersion(dic);
             }
             return version;
         }
 
+
+        /// <summary>
+        /// 计算最高版本号
+        /// </summary>
+        /// <param name="dic"></param>
+        /// <returns></returns>
+        string GetMaxVersion(Dictionary<int[], string> dic)
+        {
+            IGrouping<int, int[]> result = null;
+            var keys = dic.Select(s => s.Key);
+            for (int i = 0; i < keys.First().Length; i++)
+            {
+                result = Get(keys, i);
+                keys = result;
+            }
+            return dic[result.First()];
+        }
+
+        IGrouping<int, int[]> Get(IEnumerable<int[]> keys, int index)
+        {
+            return keys.GroupBy(g => g[index]).OrderByDescending(o => o.Key).First();
+        }
+        
 
         /// <summary>
         /// 计算最新版本号 比如: 1.2.3 => 1.2.4
@@ -296,6 +321,18 @@ namespace NugetHelperWinForm
             var newLastNum = Convert.ToInt32(nowLastNum) + 1;// 4
             nowVersionStrArray[2] = newLastNum.ToString();// 1 2 4
             return nowVersionStrArray.Aggregate((a, s) => a += "." + s);//1.2.4
+        }
+        
+
+        /// <summary>
+        /// 把 1.0.1 转换成 int[]{1,0,1}
+        /// </summary>
+        /// <param name="str">版本号</param>
+        /// <returns></returns>
+        private int[] ConvertVersionToIntArray(string str)
+        {
+            var nums = str.Split(new[] { '.' }, StringSplitOptions.RemoveEmptyEntries);
+            return Array.ConvertAll(nums, i => Convert.ToInt32(i));
         }
 
 

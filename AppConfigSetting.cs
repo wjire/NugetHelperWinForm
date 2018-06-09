@@ -33,6 +33,13 @@ namespace NugetHelperWinForm
         public static string Pwd => AppSettingValue();
 
 
+        /// <summary>
+        /// Nuget Packages 物理路径
+        /// </summary>
+        public static string PackagesUrl => AppSettingValue();
+
+
+
         private static string AppSettingValue([CallerMemberName] string key = null)
         {
             return ConfigurationManager.AppSettings[key];
