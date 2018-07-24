@@ -31,9 +31,6 @@ namespace NugetHelperWinForm
         //nuget 站点,如: http://www.mynuget.com
         private readonly string nugetUrl = AppConfigSetting.NugetUrl;
 
-        //api 接口
-        private readonly string apiUri = AppConfigSetting.ApiUri;
-
         //pwd
         private readonly string pwd = AppConfigSetting.Pwd;
 
@@ -46,10 +43,15 @@ namespace NugetHelperWinForm
             InitializeComponent();
         }
 
+        /// <summary>
+        /// 重载一个有入参的构造函数
+        /// </summary>
+        /// <param name="args"></param>
         public Form1(string[] args)
         {
             InitializeComponent();
 
+            //接收通过 window cmd 命令行运行该程序时传入的参数(这些参数是通过VS编译器的外部工具传入的)
             projectFileName = args[0];
             targetName = args[1];
             projectDir = args[2];
@@ -58,13 +60,9 @@ namespace NugetHelperWinForm
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            string url = nugetUrl + apiUri + targetName;
             lblName.Text = targetName;
             try
             {
-                //通过nuget站点的接口获取最高版本号
-                //string version = HttpGet(url).Trim('"');
-
                 //通过访问nuget站点的共享文件夹获取最高版本号
                 var version = GetMaxVersion();
 
@@ -76,31 +74,31 @@ namespace NugetHelperWinForm
                 else
                 {
                     lblVersion.Text = version;
-                    txtVersion.Text = UpdateVersion(lblVersion.Text);
+                    txtVersion.Text = UpdateVersion(version);
                 }
             }
             catch (Exception ex)
             {
                 txtMsg.Text = ex.Message;
-                lblVersion.Text = "未获取到最新的版本号";
+                lblVersion.Text = "程序出现异常,未获取到最新的版本号:";
                 txtVersion.Text = "1.0.0";
             }
         }
 
 
         /// <summary>
-        /// 确认
+        /// 确认按钮
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
         private void btnConfirm_Click(object sender, EventArgs e)
         {
-            StringBuilder sb = new StringBuilder(1024);
-            StringBuilder old = new StringBuilder(1024);
+            var sb = new StringBuilder(1024);
+            var old = new StringBuilder(1024);
             foreach (var line in File.ReadLines(assemblyinfoPath))
             {
                 old.AppendLine(line);
-                CheckLine(sb, line);
+                UpdateAssemblyInfo(sb, line);
             }
             File.WriteAllText(assemblyinfoPath, sb.ToString());
             txtMsg.AppendText("\r\n正在上传至服务器,完成后会自动关闭所有窗口,请耐心等待!");
@@ -111,7 +109,7 @@ namespace NugetHelperWinForm
         }
 
         /// <summary>
-        /// 取消
+        /// 取消按钮
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
@@ -127,21 +125,25 @@ namespace NugetHelperWinForm
         /// </summary>
         /// <param name="sb"></param>
         /// <param name="line"></param>
-        private void CheckLine(StringBuilder sb, string line)
+        private void UpdateAssemblyInfo(StringBuilder sb, string line)
         {
+            //修改描述
             if (line.Contains("AssemblyDescription"))
             {
                 sb.AppendLine("[assembly: AssemblyDescription(\"" + txtDescription.Text.Replace('\"', ' ').Replace('\\', ' ').Trim() + "\")]");
             }
+            //修改作者
             else if (line.Contains("AssemblyCompany"))
             {
                 //当前windows登录用户名
                 sb.AppendLine("[assembly: AssemblyCompany(\"" + Environment.UserName + "\")]");
             }
+            //修改日期
             else if (line.Contains("AssemblyCopyright"))
             {
                 sb.AppendLine("[assembly: AssemblyCopyright(\"" + "Copyright © " + Environment.UserName + " " + DateTime.Now.ToString("yyyy-MM-dd") + "\")]");
             }
+            //修改版本号
             else if (line.Contains("AssemblyVersion") && !line.Contains("*"))
             {
                 sb.AppendLine("[assembly: AssemblyVersion(\"" + txtVersion.Text + "\")]");
@@ -158,7 +160,6 @@ namespace NugetHelperWinForm
         /// </summary>
         private void ProcessCmd()
         {
-
             Process proc = new Process();
             string strOuput = null;
             try
@@ -168,13 +169,13 @@ namespace NugetHelperWinForm
                 //是否使用操作系统shell启动
                 proc.StartInfo.UseShellExecute = false;
 
-                // 接受来自调用程序的输入信息
+                //接受来自调用程序的输入信息
                 proc.StartInfo.RedirectStandardInput = true;
 
                 //输出信息
                 proc.StartInfo.RedirectStandardOutput = true;
 
-                // 输出错误
+                //输出错误
                 proc.StartInfo.RedirectStandardError = true;
 
                 //不显示程序窗口
@@ -183,8 +184,9 @@ namespace NugetHelperWinForm
                 proc.Start();
 
                 //构造命令
-                StringBuilder sb = new StringBuilder();
+                var sb = new StringBuilder();
 
+                //如果选择 不发布依赖项
                 if (rdoNo.Checked)
                 {
                     if (File.Exists($"{projectDir}packages.config"))
@@ -193,7 +195,6 @@ namespace NugetHelperWinForm
                         sb.Append($"move {projectDir}packages.config {toolPath}");
                         sb.Append("&&");
                     }
-
                     sb.Append(CreateCmd());
 
                     //还原 packages.config 文件
@@ -231,7 +232,7 @@ namespace NugetHelperWinForm
         /// <returns></returns>
         private string CreateCmd()
         {
-            StringBuilder sb = new StringBuilder();
+            var sb = new StringBuilder();
 
             //打包 dll 文件
             sb.Append($"nuget pack {projectFileName} -Build -Properties Configuration=Release -OutputDirectory {toolPath}");
@@ -247,22 +248,6 @@ namespace NugetHelperWinForm
 
 
         /// <summary>
-        /// 请求api,获取当前使用的最高版本号
-        /// </summary>
-        /// <param name="url"></param>
-        /// <returns></returns>
-        string HttpGet(string url)
-        {
-            HttpWebRequest request = WebRequest.CreateHttp(url);
-            HttpWebResponse response = (HttpWebResponse)request.GetResponse();
-            using (StreamReader reader = new StreamReader(response.GetResponseStream(), Encoding.UTF8))
-            {
-                return reader.ReadToEnd();
-            }
-        }
-
-
-        /// <summary>
         /// 获取最高版本号
         /// </summary>
         /// <returns></returns>
@@ -270,83 +255,73 @@ namespace NugetHelperWinForm
         {
             var version = string.Empty;
             var path = packagesUrl + targetName;
-            if (Directory.Exists(path))
+            if (!Directory.Exists(path)) return version;
+            var dirs = Directory.GetDirectories(path);
+            var dic = new Dictionary<int[], string>();
+            foreach (var dir in dirs)
             {
-                var dirs = Directory.GetDirectories(path);
-                Dictionary<int[], string> dic = new Dictionary<int[], string>();
-                foreach (var dir in dirs)
-                {
-                    var versionStr = dir.Split('\\').Last();//拿到版本号:1.0.1
-                    var versionArray = ConvertVersionToIntArray(versionStr);//版本号转数组:int[]{1,0,1}
-                    dic.Add(versionArray, versionStr);
-                }
-                version = GetMaxVersion(dic);
+                var versionStr = dir.Split('\\').Last();//拿到版本号,比如:"1.0.1"
+                var versionArray = ConvertVersionToIntArray(versionStr);//版本号转数组:"1.0.1" => int[]{1,0,1}
+                dic.Add(versionArray, versionStr);//将版本号作为键,版本号的字符串形式作为值存入字典
             }
-            return version;
+            return GetMaxVersion(dic);
         }
 
 
         /// <summary>
-        /// 计算最高版本号
+        /// 获取最高版本号
         /// </summary>
         /// <param name="dic"></param>
         /// <returns></returns>
-        string GetMaxVersion(Dictionary<int[], string> dic)
+        private string GetMaxVersion(IReadOnlyDictionary<int[], string> dic)
         {
+            if (dic == null || dic.Count == 0) throw new ArgumentNullException(nameof(dic));
             IGrouping<int, int[]> result = null;
             var keys = dic.Select(s => s.Key);
             for (int i = 0; i < keys.First().Length; i++)
             {
-                result = Get(keys, i);
+                result = GetMaxNumber(keys, i);
                 keys = result;
             }
             return dic[result.First()];
         }
 
-        IGrouping<int, int[]> Get(IEnumerable<int[]> keys, int index)
+        /// <summary>
+        /// 递归获取最高版本号
+        /// </summary>
+        /// <param name="keys"></param>
+        /// <param name="index"></param>
+        /// <returns></returns>
+        private IGrouping<int, int[]> GetMaxNumber(IEnumerable<int[]> keys, int index)
         {
             return keys.GroupBy(g => g[index]).OrderByDescending(o => o.Key).First();
         }
-        
+
 
         /// <summary>
         /// 计算最新版本号 比如: 1.2.3 => 1.2.4
         /// </summary>
-        /// <param name="nowVersion"></param>
+        /// <param name="nowVersion">当前最高版本号</param>
         /// <returns></returns>
-        string UpdateVersion(string nowVersion)
+        private string UpdateVersion(string nowVersion)
         {
-            var nowVersionStrArray = nowVersion.Split('.');// 1 2 3
-            var nowLastNum = nowVersionStrArray.Last();// 3
-            var newLastNum = Convert.ToInt32(nowLastNum) + 1;// 4
-            nowVersionStrArray[2] = newLastNum.ToString();// 1 2 4
-            return nowVersionStrArray.Aggregate((a, s) => a += "." + s);//1.2.4
+            var nowVersionStrArray = nowVersion.Split('.');//"1.2.3" => string[]{"1","2","3"}
+            var nowLastNumStr = nowVersionStrArray.Last();//拿到 "3"
+            var newLastNum = Convert.ToInt32(nowLastNumStr) + 1;//"3" => 4
+            nowVersionStrArray[2] = newLastNum.ToString();//4=>"4"
+            return nowVersionStrArray.Aggregate((a, s) => a += "." + s);// string[]{"1","2","4"} => "1.2.4"
         }
-        
+
 
         /// <summary>
-        /// 把 1.0.1 转换成 int[]{1,0,1}
+        /// 把 "1.0.1" 转换成 int[]{1,0,1}
         /// </summary>
         /// <param name="str">版本号</param>
         /// <returns></returns>
         private int[] ConvertVersionToIntArray(string str)
         {
             var nums = str.Split(new[] { '.' }, StringSplitOptions.RemoveEmptyEntries);
-            return Array.ConvertAll(nums, i => Convert.ToInt32(i));
+            return Array.ConvertAll(nums, Convert.ToInt32);
         }
-
-
-        /// <summary>
-        /// 把 1.0.1 转换成 101
-        /// </summary>
-        /// <param name="str">版本号</param>
-        /// <returns></returns>
-        private string ConvertVersion(string str)
-        {
-            var nums = str.Split(new[] { '.' }, StringSplitOptions.RemoveEmptyEntries);
-            var r = nums.Aggregate((a, t) => a += t);
-            return r;
-        }
-
     }
 }
