@@ -80,7 +80,7 @@ namespace NugetHelperWinForm
             catch (Exception ex)
             {
                 txtMsg.Text = ex.Message;
-                lblVersion.Text = "程序出现异常,未获取到最新的版本号:";
+                lblVersion.Text = "程序出现异常,未获取到最新的版本号";
                 txtVersion.Text = "1.0.0";
             }
         }
@@ -93,6 +93,12 @@ namespace NugetHelperWinForm
         /// <param name="e"></param>
         private void btnConfirm_Click(object sender, EventArgs e)
         {
+            if (!CheckDescription())
+            {
+                MessageBox.Show("请输入该程序集的描述");
+                return;
+            }
+
             var sb = new StringBuilder(1024);
             var old = new StringBuilder(1024);
             foreach (var line in File.ReadLines(assemblyinfoPath))
@@ -117,6 +123,16 @@ namespace NugetHelperWinForm
         {
             this.Close();
             this.Dispose();
+        }
+
+
+        /// <summary>
+        /// 检查是否输入了描述
+        /// </summary>
+        private bool CheckDescription()
+        {
+            var des = txtDescription.Text.Replace('\"', ' ').Replace('\\', ' ').Trim();
+            return !string.IsNullOrWhiteSpace(des) && des.Length > 3;
         }
 
 
@@ -253,10 +269,41 @@ namespace NugetHelperWinForm
         /// <returns></returns>
         private string GetMaxVersion()
         {
-            var version = string.Empty;
             var path = packagesUrl + targetName;
-            if (!Directory.Exists(path)) return version;
+            if (!Directory.Exists(path)) return string.Empty;
+
+            //获取该项目文件夹下的所有以版本号命名的文件夹的物理路径
             var dirs = Directory.GetDirectories(path);
+            if (dirs == null || !dirs.Any()) return string.Empty;
+
+            //.net 自带的 Version 类只能处理长度为 2,3,4 的版本号
+            var res = dirs.First().Split('.').Length; 
+            if (res >= 2 && res <= 4) return GetMaxVersionByDoNet(dirs);
+            return GetMaxVersionByCustom(dirs);
+        }
+
+
+        /// <summary>
+        /// 利用.net自带的 Version 类获取当前最高版本号
+        /// </summary>
+        /// <param name="dirs"></param>
+        /// <returns></returns>
+        private string GetMaxVersionByDoNet(IList<string> dirs)
+        {
+            if (dirs == null || dirs.Count == 0) throw new ArgumentNullException(nameof(dirs));
+            var versionList = dirs.Select(dir => new Version(dir.Split('\\').Last())).ToList();
+            return versionList.Max().ToString();
+        }
+
+
+        /// <summary>
+        /// 自定义方法获取最高版本号
+        /// </summary>
+        /// <param name="dirs"></param>
+        /// <returns></returns>
+        private string GetMaxVersionByCustom(IList<string> dirs)
+        {
+            if (dirs == null || dirs.Count == 0) throw new ArgumentNullException(nameof(dirs));
             var dic = new Dictionary<int[], string>();
             foreach (var dir in dirs)
             {
@@ -264,18 +311,6 @@ namespace NugetHelperWinForm
                 var versionArray = ConvertVersionToIntArray(versionStr);//版本号转数组:"1.0.1" => int[]{1,0,1}
                 dic.Add(versionArray, versionStr);//将版本号作为键,版本号的字符串形式作为值存入字典
             }
-            return GetMaxVersion(dic);
-        }
-
-
-        /// <summary>
-        /// 获取最高版本号
-        /// </summary>
-        /// <param name="dic"></param>
-        /// <returns></returns>
-        private string GetMaxVersion(IReadOnlyDictionary<int[], string> dic)
-        {
-            if (dic == null || dic.Count == 0) throw new ArgumentNullException(nameof(dic));
             IGrouping<int, int[]> result = null;
             var keys = dic.Select(s => s.Key);
             for (int i = 0; i < keys.First().Length; i++)
