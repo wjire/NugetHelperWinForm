@@ -26,7 +26,7 @@ namespace NugetHelperWinForm
         /// <summary>
         /// 版本号文件夹名集合
         /// </summary>
-        protected IList<string> Dirs { get; set; }
+        protected IList<string> Dirs { get; }
 
 
         protected BaseVersionProvider(IList<string> dirs)
