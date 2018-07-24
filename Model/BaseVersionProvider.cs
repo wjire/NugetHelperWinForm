@@ -34,9 +34,19 @@ namespace NugetHelperWinForm
             this.Dirs = dirs;
         }
 
+        /// <summary>
+        /// 获取当前最高版本号
+        /// </summary>
+        /// <param name="dirs"></param>
+        /// <returns></returns>
         protected abstract string GetMaxVersion(IList<string> dirs);
 
 
+        /// <summary>
+        /// 计算即将发布的版本号
+        /// </summary>
+        /// <param name="maxVersion"></param>
+        /// <returns></returns>
         protected abstract string CalculateNewVersion(string maxVersion);
     }
 }
