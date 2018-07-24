@@ -63,19 +63,18 @@ namespace NugetHelperWinForm
             lblName.Text = targetName;
             try
             {
-                //通过访问nuget站点的共享文件夹获取最高版本号
-                var version = GetMaxVersion();
-
-                if (string.IsNullOrWhiteSpace(version))
+                BaseVersionProvider provider = GetVersionProvider();
+                if (provider == null)
                 {
                     lblVersion.Text = "第一次上传该项目";
                     txtVersion.Text = "1.0.0";
                 }
                 else
                 {
-                    lblVersion.Text = version;
-                    txtVersion.Text = UpdateVersion(version);
+                    lblVersion.Text = provider.MaxVersion;
+                    txtVersion.Text = provider.NewVersion;
                 }
+
             }
             catch (Exception ex)
             {
@@ -264,99 +263,22 @@ namespace NugetHelperWinForm
 
 
         /// <summary>
-        /// 获取最高版本号
+        /// 获取最高版本号提供器
         /// </summary>
         /// <returns></returns>
-        private string GetMaxVersion()
+        private BaseVersionProvider GetVersionProvider()
         {
             var path = packagesUrl + targetName;
-            if (!Directory.Exists(path)) return string.Empty;
+            if (!Directory.Exists(path)) return null;
 
             //获取该项目文件夹下的所有以版本号命名的文件夹的物理路径
             var dirs = Directory.GetDirectories(path);
-            if (dirs == null || !dirs.Any()) return string.Empty;
+            if (dirs == null || !dirs.Any()) return null;
 
             //.net 自带的 Version 类只能处理长度为 2,3,4 的版本号
-            var res = dirs.First().Split('.').Length; 
-            if (res >= 2 && res <= 4) return GetMaxVersionByDoNet(dirs);
-            return GetMaxVersionByCustom(dirs);
-        }
-
-
-        /// <summary>
-        /// 利用.net自带的 Version 类获取当前最高版本号
-        /// </summary>
-        /// <param name="dirs"></param>
-        /// <returns></returns>
-        private string GetMaxVersionByDoNet(IList<string> dirs)
-        {
-            if (dirs == null || dirs.Count == 0) throw new ArgumentNullException(nameof(dirs));
-            var versionList = dirs.Select(dir => new Version(dir.Split('\\').Last())).ToList();
-            return versionList.Max().ToString();
-        }
-
-
-        /// <summary>
-        /// 自定义方法获取最高版本号
-        /// </summary>
-        /// <param name="dirs"></param>
-        /// <returns></returns>
-        private string GetMaxVersionByCustom(IList<string> dirs)
-        {
-            if (dirs == null || dirs.Count == 0) throw new ArgumentNullException(nameof(dirs));
-            var dic = new Dictionary<int[], string>();
-            foreach (var dir in dirs)
-            {
-                var versionStr = dir.Split('\\').Last();//拿到版本号,比如:"1.0.1"
-                var versionArray = ConvertVersionToIntArray(versionStr);//版本号转数组:"1.0.1" => int[]{1,0,1}
-                dic.Add(versionArray, versionStr);//将版本号作为键,版本号的字符串形式作为值存入字典
-            }
-            IGrouping<int, int[]> result = null;
-            var keys = dic.Select(s => s.Key);
-            for (int i = 0; i < keys.First().Length; i++)
-            {
-                result = GetMaxNumber(keys, i);
-                keys = result;
-            }
-            return dic[result.First()];
-        }
-
-        /// <summary>
-        /// 递归获取最高版本号
-        /// </summary>
-        /// <param name="keys"></param>
-        /// <param name="index"></param>
-        /// <returns></returns>
-        private IGrouping<int, int[]> GetMaxNumber(IEnumerable<int[]> keys, int index)
-        {
-            return keys.GroupBy(g => g[index]).OrderByDescending(o => o.Key).First();
-        }
-
-
-        /// <summary>
-        /// 计算最新版本号 比如: 1.2.3 => 1.2.4
-        /// </summary>
-        /// <param name="nowVersion">当前最高版本号</param>
-        /// <returns></returns>
-        private string UpdateVersion(string nowVersion)
-        {
-            var nowVersionStrArray = nowVersion.Split('.');//"1.2.3" => string[]{"1","2","3"}
-            var nowLastNumStr = nowVersionStrArray.Last();//拿到 "3"
-            var newLastNum = Convert.ToInt32(nowLastNumStr) + 1;//"3" => 4
-            nowVersionStrArray[2] = newLastNum.ToString();//4=>"4"
-            return nowVersionStrArray.Aggregate((a, s) => a += "." + s);// string[]{"1","2","4"} => "1.2.4"
-        }
-
-
-        /// <summary>
-        /// 把 "1.0.1" 转换成 int[]{1,0,1}
-        /// </summary>
-        /// <param name="str">版本号</param>
-        /// <returns></returns>
-        private int[] ConvertVersionToIntArray(string str)
-        {
-            var nums = str.Split(new[] { '.' }, StringSplitOptions.RemoveEmptyEntries);
-            return Array.ConvertAll(nums, Convert.ToInt32);
+            var res = dirs.First().Split('\\').Last().Split('.').Length;
+            if (res >= 2 && res <= 4) return new DoNetProvider(dirs);
+            return new CustomProvider(dirs);
         }
     }
 }

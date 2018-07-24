@@ -48,6 +48,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AppConfigSetting.cs" />
+    <Compile Include="BaseVersionProvider.cs" />
+    <Compile Include="CustomProvider.cs" />
+    <Compile Include="DoNetProvider.cs" />
     <Compile Include="Form1.cs">
       <SubType>Form</SubType>
     </Compile>
