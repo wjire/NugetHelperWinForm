@@ -21,11 +21,7 @@ namespace NugetHelperWinForm
         /// nuget 站点地址
         /// </summary>
         public static string NugetUrl => AppSettingValue();
-
-        /// <summary>
-        /// 获取版本号的接口地址
-        /// </summary>
-        public static string ApiUri => AppSettingValue();
+        
 
         /// <summary>
         /// pwd

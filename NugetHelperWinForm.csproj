@@ -47,7 +47,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AppConfigSetting.cs" />
+    <Compile Include="Model\AppConfigSetting.cs" />
     <Compile Include="Model\BaseVersionProvider.cs" />
     <Compile Include="Model\CustomProvider.cs" />
     <Compile Include="Model\DoNetProvider.cs" />
