@@ -61,26 +61,20 @@ namespace NugetHelperWinForm
         private void Form1_Load(object sender, EventArgs e)
         {
             lblName.Text = targetName;
+            BaseVersionProvider provider = null;
             try
             {
-                BaseVersionProvider provider = GetVersionProvider();
-                if (provider == null)
-                {
-                    lblVersion.Text = "第一次上传该项目";
-                    txtVersion.Text = "1.0.0";
-                }
-                else
-                {
-                    lblVersion.Text = provider.MaxVersion;
-                    txtVersion.Text = provider.NewVersion;
-                }
-
+                provider = GetVersionProvider();
             }
             catch (Exception ex)
             {
                 txtMsg.Text = ex.Message;
-                lblVersion.Text = "程序出现异常,未获取到最新的版本号";
-                txtVersion.Text = "1.0.0";
+                provider = new ErrorProvider(null);
+            }
+            finally
+            {
+                lblVersion.Text = provider.MaxVersion;
+                txtVersion.Text = provider.NewVersion;
             }
         }
 
@@ -269,11 +263,11 @@ namespace NugetHelperWinForm
         private BaseVersionProvider GetVersionProvider()
         {
             var path = packagesUrl + targetName;
-            if (!Directory.Exists(path)) return null;
+            if (!Directory.Exists(path)) return new EmptyProvider(null);
 
             //获取该项目文件夹下的所有以版本号命名的文件夹的物理路径
             var dirs = Directory.GetDirectories(path);
-            if (dirs == null || !dirs.Any()) return null;
+            if (dirs == null || !dirs.Any()) return new EmptyProvider(null);
 
             //.net 自带的 Version 类只能处理长度为 2,3,4 的版本号
             var res = dirs.First().Split('\\').Last().Split('.').Length;
