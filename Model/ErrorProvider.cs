@@ -8,6 +8,10 @@ namespace NugetHelperWinForm
 {
     public class ErrorProvider : BaseVersionProvider
     {
+        public ErrorProvider()
+        {
+            
+        }
 
         public ErrorProvider(IList<string> dirs) : base(dirs)
         {

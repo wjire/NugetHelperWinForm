@@ -9,8 +9,11 @@ namespace NugetHelperWinForm
 
     public class EmptyProvider : BaseVersionProvider
     {
-        
 
+        public EmptyProvider()
+        {
+            
+        }
         public EmptyProvider(IList<string> dirs) : base(dirs)
         {
         }

@@ -28,6 +28,10 @@ namespace NugetHelperWinForm
         /// </summary>
         protected IList<string> Dirs { get; }
 
+        protected BaseVersionProvider()
+        {
+            
+        }
 
         protected BaseVersionProvider(IList<string> dirs)
         {

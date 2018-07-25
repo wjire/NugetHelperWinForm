@@ -69,7 +69,7 @@ namespace NugetHelperWinForm
             catch (Exception ex)
             {
                 txtMsg.Text = ex.Message;
-                provider = new ErrorProvider(null);
+                provider = new ErrorProvider();
             }
             finally
             {
@@ -263,11 +263,11 @@ namespace NugetHelperWinForm
         private BaseVersionProvider GetVersionProvider()
         {
             var path = packagesUrl + targetName;
-            if (!Directory.Exists(path)) return new EmptyProvider(null);
+            if (!Directory.Exists(path)) return new EmptyProvider();
 
             //获取该项目文件夹下的所有以版本号命名的文件夹的物理路径
             var dirs = Directory.GetDirectories(path);
-            if (dirs == null || !dirs.Any()) return new EmptyProvider(null);
+            if (dirs == null || !dirs.Any()) return new EmptyProvider();
 
             //.net 自带的 Version 类只能处理长度为 2,3,4 的版本号
             var res = dirs.First().Split('\\').Last().Split('.').Length;
