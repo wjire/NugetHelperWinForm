@@ -271,7 +271,7 @@ namespace NugetHelperWinForm
 
             //.net 自带的 Version 类只能处理长度为 2,3,4 的版本号
             var res = dirs.First().Split('\\').Last().Split('.').Length;
-            if (res >= 2 && res <= 4) return new DoNetProvider(dirs);
+            if (res >= 2 && res <= 4) return new DotNetProvider(dirs);
             return new CustomProvider(dirs);
         }
     }

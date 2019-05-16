@@ -9,10 +9,10 @@ namespace NugetHelperWinForm
     /// <summary>
     /// 利用 DoNet 自带 Version 类实现版本号计算逻辑
     /// </summary>
-    public class DoNetProvider : BaseVersionProvider
+    public class DotNetProvider : BaseVersionProvider
     {
 
-        public DoNetProvider(IList<string> dirs) : base(dirs)
+        public DotNetProvider(IList<string> dirs) : base(dirs)
         {
 
         }

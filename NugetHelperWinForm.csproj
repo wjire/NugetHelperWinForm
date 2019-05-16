@@ -52,7 +52,7 @@
     <Compile Include="Model\AppConfigSetting.cs" />
     <Compile Include="Model\BaseVersionProvider.cs" />
     <Compile Include="Model\CustomProvider.cs" />
-    <Compile Include="Model\DoNetProvider.cs" />
+    <Compile Include="Model\DotNetProvider.cs" />
     <Compile Include="Form1.cs">
       <SubType>Form</SubType>
     </Compile>
