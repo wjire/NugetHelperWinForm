@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace NugetHelperWinForm
 {
     /// <summary>
-    /// 利用 DoNet 自带 Version 类实现版本号计算逻辑
+    /// 利用 DotNet 自带 Version 类实现版本号计算逻辑
     /// </summary>
     public class DotNetProvider : BaseVersionProvider
     {
